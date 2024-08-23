@@ -14,7 +14,7 @@ import com.ddyy.springbasic.service.BasicService;
 
 // @Service: 해당 클래스를 Spring Bean으로 등록하는 어노테이션, @Component와 동일하지만 가독성 향상을 위해 Service 이름을 사용
 // @Component  // 제어의 역전(Ioc) 시킬 수 있음
-@Service
+@Service     // 지우면 'Parameter 0 of method setBasicService' 에러 발생 - 지우면 Spring Bean으로 등록되지 않기 때문
 public class BasicServiceImplement implements BasicService {
 
     @Override

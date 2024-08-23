@@ -19,8 +19,7 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("잘못된 입력입니다.");
     }
 
-
-    // postman에서 validation의 body(row-JSON)을 모두 지워보니 'HttpMessageNotReadableException'라는 이름의 에러가 발생해 아래와 같이 예외 처리 연습
+    // postman에서 validation의 body(row-JSON)의 내용을 모두 지워보니 'HttpMessageNotReadableException'라는 이름의 에러가 발생해 아래와 같이 예외 처리 연습
     @ExceptionHandler(value = {HttpMessageNotReadableException.class})
     public ResponseEntity<String> notReadableException(HttpMessageNotReadableException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("요청 데이터를 읽을 수 없습니다.");

@@ -8,9 +8,10 @@ import lombok.Getter;
 
 import java.util.Date;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -32,10 +33,13 @@ public class ResponseDataController {
     // - 반환 타입으로 ResponseEntity 타입으로 지정
     //   ResponseEntity 클래스는 제너릭으로 response body 데이터의 타입을 전달해야 함
     @GetMapping("/response-entity/{name}")
-    public void responseEntity(
+    public ResponseEntity<ResponseDto> responseEntity(
         @PathVariable("name") String name
     ) {
-        
+        ResponseDto response = new ResponseDto(name, new Date());
+        // return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        // ResponseEntity의 상태코드와 메세지를 'status(HttpStatus.BAD_REQUEST)'(400 반환)'으로 지정하고 .body(response)로 무엇을 내보낼지 작성
     }
     
 

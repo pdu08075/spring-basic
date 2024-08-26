@@ -1,6 +1,8 @@
 package com.ddyy.springbasic.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;      // jakarta는 java 하위 버전에서의 javax와 같음
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +29,27 @@ import lombok.Setter;
 @Table(name = "sample_table_1")
 // sample_table1_entity
 public class SampleTable1Entity {
+
+    // @Id:
+    // - Entity 필드 중 PRIMARY KEY로 지정할 필드에 사용하는 어노테이션
+    @Id
+    // @GeneratedValue:
+    // - PRIMARY KEY에서 값을 자동 생성 전략을 지정하는 어노테이션
+    // - strategy 속성으로 전략 지정
+    // - GenerationType.Auto: JPA가 적절한 생성 전략을 선택     // 안정적이지 않아 잘 사용하지 않음
+    // - GenerationType.IDENTITY: auto_increment 전략 선택
+    // - GenerationType.SEQUENCE: 데이터베이스의 sequence 생성 전략 선택
+    // - GenerationType.TABLE: 키 생성 목적의 테이블을 이용하여 생성하는 전략 선택
+    @Column(name = "sample_id", nullable = false, unique = true, updatable = false, length = 10)
     private String sampleId;
+
+    // @Column:
+    // - 해당 필드를 테이블의 컬럼과 매핑하는 어노테이션
+    // - name: 매핑할 컬럼의 이름
+    // - nullable: null 포함 여부
+    // - unique: unique 제약 여부
+    // - length: 컬럼의 길이
+    // - 만약 테이블의 컬럼명과 클래스의 필드명이 같다면 생략 가능
+    @Column(name = "sample_coloumn", nullable = false)
     private Integer sampleColumn;
 }

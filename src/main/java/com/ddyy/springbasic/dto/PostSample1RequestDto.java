@@ -18,5 +18,5 @@ public class PostSample1RequestDto {
     @Length(max = 10)
     private String sampleId;
     @NotNull
-    private Integer sampleComlumn;
+    private Integer sampleColumn;
 }

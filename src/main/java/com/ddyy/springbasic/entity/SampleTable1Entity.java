@@ -50,6 +50,6 @@ public class SampleTable1Entity {
     // - unique: unique 제약 여부
     // - length: 컬럼의 길이
     // - 만약 테이블의 컬럼명과 클래스의 필드명이 같다면 생략 가능
-    @Column(name = "sample_coloumn", nullable = false)
+    @Column(name = "sample_column", nullable = false)
     private Integer sampleColumn;
 }

@@ -25,7 +25,10 @@ public class SampleServiceImplement implements SampleService {
 
         // SELECT (SQL : SELECT)
         // 1. repository를 이용하여 조회 (findAll, findById)
-        SampleTable1Entity existEntity = sampleTable1Repository.findById(sampleId).get();       // 조회 작업 수행   * Entity 받는 방식
+        // SampleTable1Entity existEntity = sampleTable1Repository.findById(sampleId).get();       // 조회 작업 수행   * Entity 받는 방식(실제로 잘 안 쓰는 방식)
+        // 2. repository를 이용하여 조회 (existsById)
+        boolean isExisted = sampleTable1Repository.existsById(sampleId);     // 괄호 안의 값의 존재 여부 따진 후 있으면 true, 없으면 false를 전달
+        if (isExisted) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 기본키입니다.");
 
         // CREATE (SQL : INSERT)
         // 1. Entity 클래스의 인스턴스 생성

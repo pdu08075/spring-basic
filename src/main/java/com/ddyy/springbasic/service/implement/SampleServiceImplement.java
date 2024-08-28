@@ -1,12 +1,16 @@
 package com.ddyy.springbasic.service.implement;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ddyy.springbasic.dto.PostSample1RequestDto;
 import com.ddyy.springbasic.entity.SampleTable1Entity;
+import com.ddyy.springbasic.entity.SampleUserEntity;
 import com.ddyy.springbasic.repository.SampleTable1Repository;
+import com.ddyy.springbasic.repository.SampleUserRepository;
 import com.ddyy.springbasic.service.SampleService;
 
 import lombok.RequiredArgsConstructor;
@@ -15,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SampleServiceImplement implements SampleService {
 
+    private final SampleUserRepository sampleUserRepository;        // 의존성 외부에서 주입 -> 생성자 자동
     private final SampleTable1Repository sampleTable1Repository;
 
     @Override
@@ -56,5 +61,14 @@ public class SampleServiceImplement implements SampleService {
         sampleTable1Repository.delete(entity);      // 해당 방법 사용하려면 delete()의 괄호 안에 수향할 eneity를 작성해야 해서 바로 윗 줄에서 entity 작성
 
         return ResponseEntity.status(HttpStatus.OK).body("성공");
+    }
+
+    @Override
+    public ResponseEntity<String> queryString() {
+
+        // List<SampleUserEntity> sampleUserEntities = sampleUserRepository.findByName("홍길동");
+        List<SampleUserEntity> sampleUserEntities = sampleUserRepository.getJpql("홍길동", "부산광역시");
+
+        return ResponseEntity.status(HttpStatus.OK).body(sampleUserEntities.toString());
     }
 }

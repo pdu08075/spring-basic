@@ -8,12 +8,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "sample_user")
+@ToString       // 문자열로 반환
+@Entity(name = "user")
 @Table(name = "sample_user")
 public class SampleUserEntity {
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ddyy.springbasic.entity.SampleUserEntity;
@@ -42,4 +43,25 @@ extends JpaRepository<SampleUserEntity, String> {
     // - 표준 SQL과 매우 흡사하지만 Entity 클래스와 Entity 필드로 쿼리를 작성하는 방법
     @Query(value = "SELECT u FROM user u WHERE u.name = ?1 AND  u.address = ?2")        // 별칭 필수
     List<SampleUserEntity> getJpql(String name, String address);
+
+    @Query(value = "SELECT u FROM user u WHERE u.name = :name AND  u.address = :address")        // 별칭 필수
+    List<SampleUserEntity> getJpql2(
+        @Param("name") String name,
+        @Param("address") String address
+    );
+
+    // Native SQL:
+    // - 현재 RDBMS의 SQL 문법을 그대로 사용하는 방법
+    // - @Query nativeQuery 속성을 반드시 true로 지정
+    @Query(value =
+    "SELECT * " +
+    "FROM sample_user " +
+    "WHERE name = :name " +
+    "AND address = :address"
+    , nativeQuery = true)
+    List<SampleUserEntity> getNativeSql(           // ServiceImplement에서 실행
+        @Param("name") String name,
+        @Param("address") String address
+    );
+    
 }

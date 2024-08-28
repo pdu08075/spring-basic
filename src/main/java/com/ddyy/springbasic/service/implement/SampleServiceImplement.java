@@ -67,7 +67,7 @@ public class SampleServiceImplement implements SampleService {
     public ResponseEntity<String> queryString() {
 
         // List<SampleUserEntity> sampleUserEntities = sampleUserRepository.findByName("홍길동");
-        List<SampleUserEntity> sampleUserEntities = sampleUserRepository.getJpql("홍길동", "부산광역시");
+        List<SampleUserEntity> sampleUserEntities = sampleUserRepository.getNativeSql("홍길동", "부산광역시");
 
         return ResponseEntity.status(HttpStatus.OK).body(sampleUserEntities.toString());
     }

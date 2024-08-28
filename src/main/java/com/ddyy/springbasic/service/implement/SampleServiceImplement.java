@@ -42,4 +42,19 @@ public class SampleServiceImplement implements SampleService {
 
         return ResponseEntity.status(HttpStatus.CREATED).body("성공");            // ResponseEntity의 상태가 실패일 경우 처리할 내용은 .status()에 작성 (201번 에러(=HttpStatus.CREATED)), 성공일 경우 처리할 내용은 .body()에 작성
     }
+
+    @Override
+    public ResponseEntity<String> deleteSample1(String sampleId) {
+
+        // DELETE (SQL : DELETE)
+        // 1. repository를 이용하여 ID(PK)에 해당하는 레코드 삭제
+        //    - 해당하는 레코드가 존재하지 않아도 에러가 발생하지 않음
+        sampleTable1Repository.deleteById(sampleId);
+        // 2.repository를 이용하여 Entity에 해당하는 레코드 삭제
+        //    - 해당하는 레코드가 존재하지 않을 때 수행 불가능
+        SampleTable1Entity entity  = sampleTable1Repository.findById(sampleId).get();
+        sampleTable1Repository.delete(entity);      // 해당 방법 사용하려면 delete()의 괄호 안에 수향할 eneity를 작성해야 해서 바로 윗 줄에서 entity 작성
+
+        return ResponseEntity.status(HttpStatus.OK).body("성공");
+    }
 }

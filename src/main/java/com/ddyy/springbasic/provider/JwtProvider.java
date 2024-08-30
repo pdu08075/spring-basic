@@ -10,6 +10,8 @@ import java.time.temporal.ChronoUnit;
 import java.time.*;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -69,5 +71,27 @@ public class JwtProvider {
 
         return jwt;
     }
+    
+    public String validate(String jwt) {
 
+        // jwt 검증 결과로 반환되는 payload가 저장될 변수
+        Claims claims = null;
+
+        // 비밀키 생성
+        Key key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+
+        try {
+            // 비밀키를 이용하여 jwt를 검증 작업
+            claims = Jwts.parserBuilder()
+                .setSigningKey(key)     // 서명할 떄 적었던 키
+                .build()
+                .parseClaimsJws(jwt)
+                .getBody();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
+
+        return claims.getSubject();
+    }
 }

@@ -10,6 +10,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -76,10 +79,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{      // OnceP
             AbstractAuthenticationToken authenticationToken
                 = new UsernamePasswordAuthenticationToken(userEntity, null, roles);       // 비밀번호는 사용하지 않아서 null로 작성
 
+            // 5.2 인증 정보에 상세 리퀘스트를 등록'
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            // 5.3 빈 security context 생성
+            SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+
+            // 5.4 security context 생성한 인증 정보 토큰을 등록
+            securityContext.setAuthentication(authenticationToken);
+
+            // 5.5 생성한 security context를 등록
+            SecurityContextHolder.setContext(securityContext);
 
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+
+        // 6. 다음 필터에 request와 response를 전달
+        filterChain.doFilter(request, response);
 
     }
     

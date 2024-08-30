@@ -2,10 +2,20 @@ package com.ddyy.springbasic.filter;
 
 import java.io.IOException;
 
+import java.util.List;
+import java.util.ArrayList;
+
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.ddyy.springbasic.entity.SampleUserEntity;
 import com.ddyy.springbasic.provider.JwtProvider;
+import com.ddyy.springbasic.repository.SampleUserRepository;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -22,6 +32,8 @@ import lombok.RequiredArgsConstructor;
 public class JwtAuthenticationFilter extends OncePerRequestFilter{      // OncePerRequestFilter를 확장 구현 할 시 반드시 doFilterInternal를 작성해야 함
 
     private final JwtProvider JwtProvider;    // validate를 호출하고 싶으면 인스턴스가 필요해서 의존성 주입
+
+    private final SampleUserRepository sampleUserRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -42,10 +54,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{      // OnceP
                 filterChain.doFilter(request, response);
                 return;
             }
+
+            // 3. 데이터베이스에 존재하는 유저인지 확인 // 상단에 final ~ repoeitory 작성
+            SampleUserEntity userEntity = sampleUserRepository.findByUserId(subject);
+            if (userEntity == null) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 4. 접근주체의 권한 리스트 지정
+            List<GrantedAuthority> roles = AuthorityUtils.NO_AUTHORITIES;
+            if (subject.equals("qwer1234")) {
+                roles = new ArrayList<>();      // 새로 만들 떄 이렇게 넣어줘야 함
+                roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));      // 소괄호 안에는 권한의 이름을 작성하는데, 이는 무조건 'ROLE_'로 시작해야 함
+            }
+
+            // 5. principal에 대한 정보를 controller로 전달하기 위해 context에 저장
+
+            // 5.1 인증된 사용자 객체를 생성
+            // UsernamePasswordAuthenticationToken(사용자정보, 비밀번호, 권한);     
+            AbstractAuthenticationToken authenticationToken
+                = new UsernamePasswordAuthenticationToken(userEntity, null, roles);       // 비밀번호는 사용하지 않아서 null로 작성
+
+
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-
 
     }
     

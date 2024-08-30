@@ -63,5 +63,7 @@ extends JpaRepository<SampleUserEntity, String> {
         @Param("name") String name,
         @Param("address") String address
     );
+
+    SampleUserEntity findByUserId(String userId);       // PK라 반환타입이 단일 (List 아님)
     
 }

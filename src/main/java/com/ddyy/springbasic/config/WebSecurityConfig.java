@@ -1,5 +1,7 @@
 package com.ddyy.springbasic.config;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +11,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -17,6 +21,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ddyy.springbasic.filter.JwtAuthenticationFilter;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 // Spring Web 보안 설정
@@ -69,18 +76,25 @@ public class WebSecurityConfig {
             // - 모든 클라이언트가 접근할 수 있도록 허용
             // - 인증된 모든 클라이언트가 접근할 수 있도록 허용
             // - 인증된 클라이언트 중 특정 권한을 가진 클라이언트만 접근할 수 있도록 허용
-            .authorizeHttpRequests(request -> request
+            .authorizeHttpRequests(request -> request                                                   // 이해 필수 !!!!!!!
                 // requestMatchers(): URL 패턴, HTTP 메소드 + URL 패턴, HTTP 메소드 마다 접근 허용 방식을 지정하는 메서드
                 // permitAll(): 모든 클라이언트가 접근할 수 있도록 지정
                 // hasRole(권한): 특정 권한을 가진 클라이언트만 접근할 수 있도록 지정
                 // authenticated(): 인증된 모든 클라이언트가 접근할 수 있도록 지정
                 .requestMatchers("/anyone/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/sample/jwt/*").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/sesrvice").hasRole("ADMIN")
                 .requestMatchers("/user/**").authenticated()
                 .requestMatchers(HttpMethod.GET).authenticated()
-                .requestMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN")       // 윗 둘의 코드들 처럼 패턴만 작성해도 되고, HTTPMethod만 작성해도 되고, 이 줄 처럼 둘 다 작성해도 됨
+                .requestMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN")       // 윗 줄의 코드들 처럼 패턴만 작성해도 되고, HttpMethod만 작성해도 되고, 이 줄 처럼 둘 다 작성해도 됨
                 // anyRequest(): requestMatchers로 지정한 메서드 혹은 URL이 아닌 모든 유형은 반드시 인증하도록 지정
                 .anyRequest().authenticated()
+                )
+
+                // 인증 및 인가 과정에서 발생한 예외를 직접 처리
+                .exceptionHandling(exceptionHandling -> exceptionHandling                                                // 직접 만져줘야 해서 주의!!!!
+                    .authenticationEntryPoint(new FailedAuthenticationEntryPoint())
                 )
                 // jwtAuthenticationFilter를 UsernamePasswordAuthenticationFilter 이전에 등록
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);      // (지금 넣을 거, 이전 거)
@@ -105,4 +119,20 @@ public class WebSecurityConfig {
 
         // 이렇게 작성된 정책들의 집합을 다시 위의 .cors 안에 작성
     }
+}
+
+// 인증 및 인가 실패 처리를 위한 커스엄 예외 (authenticaationEntryPoint 인터페이스 구현)
+class FailedAuthenticationEntryPoint implements AuthenticationEntryPoint {      // 빠른 수정
+
+    @Override
+    public void commence(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException authException) throws IOException, ServletException {
+
+        authException.printStackTrace();        // 실패하면
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);       // 403
+        response.getWriter().write("{\"message\": \"인증 및 인가에 실패했습니다.\"}");
+        
+    }
+    
 }

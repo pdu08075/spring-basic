@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 // OncePerRequestFilter 라는 추상클래스를 확장 구현하여 filter 클래스로 생성
-public class JwtAuthenticationFilter extends OncePerRequestFilter{      // OncePerRequestFilter를 확장 구현 할 시 반드시 doFilterInternal를 작성해야 함
+public class JwtAuthenticationFilter extends OncePerRequestFilter{      // OncePerRequestFilter를 확장 구현 할 시 반드시 doFilterInternal를 작성해야 함          // JwtAuthenticationFilter 이해 필수!!!!!
 
     private final JwtProvider JwtProvider;    // validate를 호출하고 싶으면 인스턴스가 필요해서 의존성 주입
 
@@ -60,11 +60,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{      // OnceP
             }
 
             // 3. 데이터베이스에 존재하는 유저인지 확인 // 상단에 final ~ repoeitory 작성
-            SampleUserEntity userEntity = sampleUserRepository.findByUserId(subject);
-            if (userEntity == null) {
-                filterChain.doFilter(request, response);
-                return;
-            }
+            // SampleUserEntity userEntity = sampleUserRepository.findByUserId(subject);
+            // if (userEntity == null) {
+            //     filterChain.doFilter(request, response);
+            //     return;
+            // }
 
             // 4. 접근주체의 권한 리스트 지정
             List<GrantedAuthority> roles = AuthorityUtils.NO_AUTHORITIES;
@@ -78,7 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{      // OnceP
             // 5.1 인증된 사용자 객체를 생성
             // UsernamePasswordAuthenticationToken(사용자정보, 비밀번호, 권한);     
             AbstractAuthenticationToken authenticationToken
-                = new UsernamePasswordAuthenticationToken(userEntity, null, roles);       // 비밀번호는 사용하지 않아서 null로 작성
+                = new UsernamePasswordAuthenticationToken(subject, null, roles);       // 비밀번호는 사용하지 않아서 null로 작성
 
             // 5.2 인증 정보에 상세 리퀘스트를 등록'
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

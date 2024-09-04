@@ -64,6 +64,9 @@ extends JpaRepository<SampleUserEntity, String> {
         @Param("address") String address
     );
 
+    boolean existsByUserId(String userId);
+    boolean existsByTelNumber(String telNumber);
+
     SampleUserEntity findByUserId(String userId);       // PK라 반환타입이 단일 (List 아님)
     
 }

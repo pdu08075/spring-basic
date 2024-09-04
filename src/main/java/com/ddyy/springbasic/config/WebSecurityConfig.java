@@ -81,7 +81,7 @@ public class WebSecurityConfig {
                 // permitAll(): 모든 클라이언트가 접근할 수 있도록 지정
                 // hasRole(권한): 특정 권한을 가진 클라이언트만 접근할 수 있도록 지정
                 // authenticated(): 인증된 모든 클라이언트가 접근할 수 있도록 지정
-                .requestMatchers("/anyone/**").permitAll()
+                .requestMatchers("/anyone/**", "/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/sample/jwt/*").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/sesrvice").hasRole("ADMIN")

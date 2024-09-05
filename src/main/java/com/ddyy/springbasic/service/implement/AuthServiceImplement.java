@@ -76,7 +76,7 @@ public class AuthServiceImplement implements AuthService {
     }
 
     @Override
-    public String signIp(SignInRequestDto dto) {
+    public String signIn(SignInRequestDto dto) {
         
         try {
             String userId = dto.getUserId();

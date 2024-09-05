@@ -5,5 +5,5 @@ import com.ddyy.springbasic.dto.SignInRequestDto;
 
 public interface AuthService {
     String signUp(PostUserRequestDto dto);
-    String signIp(SignInRequestDto dto);
+    String signIn(SignInRequestDto dto);
 }

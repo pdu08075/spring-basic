@@ -20,6 +20,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.ddyy.springbasic.filter.JwtAuthenticationFilter;
+import com.ddyy.springbasic.handler.OAuth2SuccessHandler;
+import com.ddyy.springbasic.service.implement.OAuth2UserServiceImplement;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +41,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
+    private final OAuth2SuccessHandler OAuth2UserSuccessHandler;
+    private final OAuth2UserServiceImplement oAuth2UserService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
@@ -81,7 +85,7 @@ public class WebSecurityConfig {
                 // permitAll(): 모든 클라이언트가 접근할 수 있도록 지정
                 // hasRole(권한): 특정 권한을 가진 클라이언트만 접근할 수 있도록 지정
                 // authenticated(): 인증된 모든 클라이언트가 접근할 수 있도록 지정
-                .requestMatchers("/anyone/**", "/auth/**").permitAll()
+                .requestMatchers("/anyone/**", "/auth/**", "/oauth2/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/sample/jwt/*").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/sesrvice").hasRole("ADMIN")
@@ -90,6 +94,14 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN")       // 윗 줄의 코드들 처럼 패턴만 작성해도 되고, HttpMethod만 작성해도 되고, 이 줄 처럼 둘 다 작성해도 됨
                 // anyRequest(): requestMatchers로 지정한 메서드 혹은 URL이 아닌 모든 유형은 반드시 인증하도록 지정
                 .anyRequest().authenticated()
+                )
+
+                // OAuth2 인증 처리
+                .oauth2Login(oauth2 -> oauth2
+                    .redirectionEndpoint(endPoint -> endPoint.baseUri("/auth/sns"))      // 어떤 경로로 오는 것에 대해 처리할지 작성
+                    .redirectionEndpoint(endPoint -> endPoint.baseUri("/oauth2/callback/*"))      // 어떤 경로로 오는 것에 대해 처리할지 작성
+                    .userInfoEndpoint(endPoint -> endPoint.userService(oAuth2UserService))      // 어떤 경로로 오는 것에 대해 처리할지 작성
+                    .successHandler(OAuth2UserSuccessHandler)
                 )
 
                 // 인증 및 인가 과정에서 발생한 예외를 직접 처리
